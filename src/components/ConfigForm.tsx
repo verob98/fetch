@@ -34,14 +34,18 @@ export function ConfigForm({ onSubmit, isLoading }: ConfigFormProps) {
             Inversión Inicial (EUR)
           </label>
           <input
-            type="number"
-            step="0.01"
-            value={config.inversionInicial}
-            onChange={(e) =>
-              setConfig({ ...config, inversionInicial: parseFloat(e.target.value) })
-            }
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            required
+              type="number"
+  step="0.01"
+  value={config.inversionInicial}
+  onChange={(e) => {
+    const value = e.target.value;
+    setConfig({
+      ...config,
+      inversionInicial: value === '' ? 0 : parseFloat(value),
+    });
+  }}
+  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+  required
           />
         </div>
 
