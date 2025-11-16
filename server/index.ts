@@ -129,22 +129,33 @@ app.get('/api/status', async (req, res) => {
       });
     }
 
-    const balance = await tradingBot.getBalance();
-    const currentPrice = await tradingBot.getCurrentPrice();
+    let balance = { btc: 0, eur: 0 };
+    let currentPrice = 0;
+    let lastBuyPrice = null;
+    let lastSellPrice = null;
+    let trades: any[] = [];
+
+    try { balance = await tradingBot.getBalance(); } catch {}
+    try { currentPrice = await tradingBot.getCurrentPrice(); } catch {}
+    try { lastBuyPrice = tradingBot.getLastBuyPrice(); } catch {}
+    try { lastSellPrice = tradingBot.getLastSellPrice(); } catch {}
+    try { trades = tradingBot.getTrades() || []; } catch {}
 
     res.json({
       initialized: true,
       isRunning: tradingBot.isActive(),
       balance,
       currentPrice,
-      lastBuyPrice: tradingBot.getLastBuyPrice(),
-      lastSellPrice: tradingBot.getLastSellPrice(),
-      trades: tradingBot.getTrades(),
+      lastBuyPrice,
+      lastSellPrice,
+      trades,
     });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error('Error en /api/status:', error);
+    res.status(500).json({ error: 'Internal Server Error', details: error.message });
   }
 });
+
 
 app.get('/api/price', async (req, res) => {
   try {
@@ -184,6 +195,8 @@ async function startPriceUpdates() {
             price,
             timestamp: Date.now(),
             balance,
+            lastBuyPrice: tradingBot.getLastBuyPrice(),
+            lastSellPrice: tradingBot.getLastSellPrice(),
           },
         });
       } catch (error) {

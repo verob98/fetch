@@ -7,6 +7,8 @@ interface WebSocketMessage {
     price: number;
     timestamp: number;
     balance: Balance;
+    lastBuyPrice: number | null;
+    lastSellPrice: number | null;
   };
 }
 

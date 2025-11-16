@@ -44,19 +44,23 @@ export class TradingBot {
       orders.sort((a, b) => b.closetm - a.closetm);
 
       for (const order of orders) {
-        if (order.descr.pair === 'XXBTZEUR') {
-          if (order.descr.type === 'sell' && !this.lastSellPrice) {
-            this.lastSellPrice = parseFloat(order.price);
-          }
-          if (order.descr.type === 'buy' && !this.lastBuyPrice) {
-            this.lastBuyPrice = parseFloat(order.price);
-          }
-        }
+  // Normalizar el par: quitar "/" y convertir a mayúsculas
+  const pair = order.descr.pair.replace('/', '').toUpperCase();
 
-        if (this.lastSellPrice && this.lastBuyPrice) {
-          break;
-        }
-      }
+  if (pair === 'XXBTZEUR' || pair === 'XBTZEUR' || pair === 'XBTEUR') {
+
+    if (order.descr.type === 'sell' && !this.lastSellPrice) {
+      this.lastSellPrice = parseFloat(order.price);
+    }
+
+    if (order.descr.type === 'buy' && !this.lastBuyPrice) {
+      this.lastBuyPrice = parseFloat(order.price);
+    }
+  }
+
+  if (this.lastSellPrice && this.lastBuyPrice) break;
+}
+
 
       console.log('Last operations loaded:', {
         lastBuyPrice: this.lastBuyPrice,
